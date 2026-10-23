@@ -182,3 +182,15 @@ wfile
 pathlib
 psql
 temporalio
+dbname
+getenv
+isready
+libexec
+netns
+noexec
+nosuid
+psqlrc
+rstrip
+slirp
+tailscaled
+urandom
