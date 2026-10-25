@@ -32,8 +32,21 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # The shared devtools lint workflow reports as `lint / lint`. It checks the
+  # vendored payload, syncs the Vale styles, installs guard-markdown, and
+  # runs `mise run lint`, so this repository keeps supplying those tasks.
   lint:
-    name: lint
+    permissions:
+      contents: read
+    uses: tbhb-dev/devtools/.github/workflows/consumer-lint.yml@8dff05b148c3a468dbf0e6e8fb48092bd5cbb418 # v0.18.0
+
+  # The tree scan in `lint` sees only the checkout. This reads every
+  # commit, message, and author line the pull request adds, so a value
+  # committed and removed again within the branch still fails. CI has no
+  # private literals, so this runs the publishable patterns only.
+  leak-range:
+    name: leak-range
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
       - name: Harden the runner
@@ -41,61 +54,47 @@ jobs:
         with:
           egress-policy: audit
 
-      # Full history: the leak scan below reads every commit a pull
-      # request adds, and a shallow clone is refused as incomplete.
+      # Full history: the range scan reads every commit a pull request
+      # adds, and a shallow clone is refused as incomplete.
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
 
-      # Installs every tool the mise config pins -- vendir, uv, pnpm and the
-      # rest from mise.toml, the baseline from the vendored conf.d drop-in
-      # -- at the version and digest recorded in the lockfile beside each
-      # config.
       - name: Set up the toolchain
         uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           # renovate: datasource=github-releases depName=jdx/mise
           version: 2026.10.10
 
-      # Resyncs the devtools payload in place from vendir.yml, ignoring the
-      # lock's stored SHAs, and fails on any difference from the committed
-      # tree. That catches a vendored file edited in place, a sync nobody
-      # committed, and a manifest bump whose vendir.lock.yml is stale. The
-      # in-place sync is safe on a clean CI checkout. The local lint bar runs
-      # the locked scratch comparison, check-vendored, so it can't overwrite
-      # unstaged edits.
-      - name: Check the vendored payload
-        run: mise run devtools:check-vendored
-
-      # mise installs the vale binary but does not fetch the style packages
-      # .vale.ini declares.
-      - name: Sync Vale styles
-        run: mise run install-tools
-
-      # guard-markdown backs lint-markdown-wrap. The task installs the
-      # version the devtools pin in apm.yml names.
-      - name: Install guard-markdown
-        run: |
-          mise run install-guard-markdown
-          gobin=$(go env GOPATH)
-          echo "$gobin/bin" >> "$GITHUB_PATH"
-
-      - name: Lint
-        run: mise run lint
-
-      # The tree scan in `lint` sees only the checkout. This reads every
-      # commit, message, and author line the pull request adds, so a value
-      # committed and removed again within the branch still fails. CI has no
-      # private literals, so this runs the publishable patterns only.
       - name: Scan the pull request for leaks
-        if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         # Scan source commits rather than GitHub's synthetic merge signature.
         run: mise run devtools:lint-leaks -- --range "${BASE_SHA}..${HEAD_SHA}"
+
+  test-tools:
+    name: test-tools
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Installs every tool the mise config pins, bats included.
+      - name: Set up the toolchain
+        uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+        with:
+          # renovate: datasource=github-releases depName=jdx/mise
+          version: 2026.10.10
 
       - name: Test the shell tools
         run: |

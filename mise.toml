@@ -24,6 +24,7 @@ uv = "0.13.1"
 pnpm = "12.14.0"
 
 [env]
+DEVTOOLS_GO_MODULES_MODE = "vendor"
 DEVTOOLS_LOCK_PLATFORMS = "linux-x64,macos-arm64"
 UV_PYTHON_PREFERENCE = "only-managed"
 DEVTOOLS_PROSE_GLOB = "!{LICENSE,CHANGELOG.md,.vale/*,tmp/*,vendor/*,infra/ansible/.collections/*,node_modules/*,.nx/*,.venv/*,.pytest_cache/*,apm_modules/*,.claude/worktrees/*,.codex/worktrees/*,.worktrees/*,COMMIT_AGENTMSG,PR_AGENTDESC.md,SQUASH_AGENTMSG}"
@@ -34,6 +35,7 @@ includes = [
   ".devtools/tasks/fix.toml",
   ".devtools/tasks/format.toml",
   ".devtools/tasks/git-hooks.toml",
+  ".devtools/tasks/go.toml",
   ".devtools/tasks/leaks.toml",
   ".devtools/tasks/lint.toml",
   ".devtools/tasks/pins.toml",
