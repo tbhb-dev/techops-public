@@ -19,7 +19,7 @@ apm = "0.33.0"
 shfmt = "3.14.1"
 jq = "1.8.2"
 # Runs the shared APM audit and the Python toolchain.
-uv = "0.13.1"
+uv = "0.13.5"
 # JS/TS workspace package manager; package.json packageManager names the same version.
 pnpm = "12.14.0"
 
