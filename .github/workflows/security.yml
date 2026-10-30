@@ -43,16 +43,16 @@ jobs:
   gitleaks:
     permissions:
       contents: read
-    uses: tbhb-dev/devtools/.github/workflows/scan-gitleaks.yml@8dff05b148c3a468dbf0e6e8fb48092bd5cbb418 # v0.18.0
+    uses: tbhb-dev/devtools/.github/workflows/scan-gitleaks.yml@1621e6a9e8416bf801732996a104a3b5b7a99fdb # v0.22.1
 
   govulncheck:
     permissions:
       contents: read
       security-events: write
-    uses: tbhb-dev/devtools/.github/workflows/scan-govulncheck.yml@8dff05b148c3a468dbf0e6e8fb48092bd5cbb418 # v0.18.0
+    uses: tbhb-dev/devtools/.github/workflows/scan-govulncheck.yml@1621e6a9e8416bf801732996a104a3b5b7a99fdb # v0.22.1
 
   gomodscan:
     permissions:
       contents: read
       security-events: write
-    uses: tbhb-dev/devtools/.github/workflows/scan-gomodscan.yml@8dff05b148c3a468dbf0e6e8fb48092bd5cbb418 # v0.18.0
+    uses: tbhb-dev/devtools/.github/workflows/scan-gomodscan.yml@1621e6a9e8416bf801732996a104a3b5b7a99fdb # v0.22.1

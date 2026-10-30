@@ -31,7 +31,7 @@ repos:
   # COMMIT_AGENTMSG draft once a commit lands. vale-commit-msg and
   # cspell-commit-msg read this repository's .vale.ini and .cspell.jsonc.
   - repo: https://github.com/tbhb-dev/devtools
-    rev: 8dff05b148c3a468dbf0e6e8fb48092bd5cbb418  # frozen: v0.18.0
+    rev: 1621e6a9e8416bf801732996a104a3b5b7a99fdb  # frozen: v0.22.1
     hooks:
       - id: commit-trailers
       - id: commitlint
