@@ -2,7 +2,15 @@
 ["devtools:lint-leaks"]
 description = "Check for private identifiers without printing their values"
 quiet = true
-run = "bash $DEVTOOLS_DIR/scripts/check-leaks.sh"
+run = '''
+if [ "$#" -eq 0 ]; then
+  case "${DEVTOOLS_LEAK_MODE:-tree}" in
+  staged) set -- --staged ;;
+  publish) set -- --publish ;;
+  esac
+fi
+bash "$DEVTOOLS_DIR/scripts/check-leaks.sh" "$@"
+'''
 
 # prek consumes Git ref lines itself; the wrapper must scan before prek.
 ["devtools:check-leak-hook"]

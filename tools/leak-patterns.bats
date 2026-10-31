@@ -9,7 +9,7 @@ setup() {
   root=$(git -C "$BATS_TEST_DIRNAME" rev-parse --show-toplevel)
   checker="$root/.devtools/scripts/check-leaks.sh"
 
-  unset GIT_DIR GIT_COMMON_DIR GIT_WORK_TREE GIT_INDEX_FILE GITHUB_ACTIONS CI
+  unset GIT_DIR GIT_COMMON_DIR GIT_WORK_TREE GIT_INDEX_FILE GITHUB_ACTIONS CI DEVTOOLS_LEAK_MODE DEVTOOLS_LEAK_BASE
   for name in $(compgen -e); do
     if [[ $name == *_PRIVATE_STRINGS ]]; then unset "$name"; fi
   done
